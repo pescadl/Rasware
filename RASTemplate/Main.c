@@ -1,27 +1,36 @@
 #include <RASLib/inc/common.h>
-#include <RASLib/inc/gpio.h>
-#include <RASLib/inc/time.h>
+#include <RASLib/inc/motor.h>
 
-// Blink the LED to show we're on
-tBoolean blink_on = true;
+static tMotor *Motors[2];
+static tBoolean initialized = false;
 
-void blink(void) {
-    SetPin(PIN_F2, blink_on);
-    SetPin(PIN_F3, blink_on);
- 
-    blink_on = !blink_on;
-}
+void initMotors(void);
+void setMotorSpeed(float speed);
 
-
-// The 'main' function is the entry point of the program
 int main(void) {
-    // Initialization code can go here
-    CallEvery(blink, 0, 0.005);
+    // initialization code can go here
+    initMotors();
+    setMotorSpeed(1.0);
     
     while (1) {
         // Runtime code can go here
         Printf("Hello World!\n");
         
     }
+}
+
+
+void initMotors(void) {
+    if (!initialized) {
+        initialized = true;
+
+        Motors[0] = InitializeServoMotor(PIN_A2, false);
+        Motors[1] = InitializeServoMotor(PIN_A7, false);
+    }
+}
+
+void setMotorSpeed(float speed) {
+    SetMotor(Motors[0], -speed);
+    SetMotor(Motors[1], speed);
 }
 
